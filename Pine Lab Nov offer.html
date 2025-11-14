@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pine Labs Deal Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .form-select, .form-input {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="%239ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l4 4 4-4"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25em;
+        }
+        .form-input {
+            background-image: none;
+        }
+         /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        <header class="mb-6 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Vehicle EMI & Offer Calculator</h1>
+            <p class="text-gray-500 mt-1">Select a model to find the best bank offers</p>
+        </header>
+
+        <!-- Main controls section -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="md:col-span-2">
+                <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Select Model</label>
+                <select id="model" class="form-select w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out">
+                    <option value="">-- Choose a Model --</option>
+                </select>
+            </div>
+            <div>
+                <label for="bank" class="block text-sm font-medium text-gray-700 mb-1">Select Bank</label>
+                <select id="bank" class="form-select w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" disabled>
+                    <option value="">-- Select Bank --</option>
+                </select>
+            </div>
+            <div>
+                <label for="tenure" class="block text-sm font-medium text-gray-700 mb-1">Select Tenure</label>
+                <select id="tenure" class="form-select w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" disabled>
+                    <option value="">-- Select Tenure --</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Part Payment Input -->
+        <div class="mb-8">
+            <label for="partPayment" class="block text-sm font-medium text-gray-700 mb-1">Part Payment on Card (₹)</label>
+            <input type="number" id="partPayment" class="form-input w-full md:w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" placeholder="Enter amount for card payment" disabled>
+        </div>
+
+
+        <!-- Results Display -->
+        <div id="results-container" class="hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full EMI on Card</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Part Payment</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full Sweep</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="results-body">
+                        <!-- Rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+             <div class="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg text-center">
+                <p id="final-savings" class="text-indigo-800 font-semibold text-lg"></p>
+            </div>
+        </div>
+         <div id="no-selection" class="text-center py-10">
+            <p class="text-gray-500">Please select a model, bank, and tenure to see the calculations.</p>
+        </div>
+
+    </div>
+    
+    <!-- Owner View Section -->
+    <div class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 mt-6">
+        <div id="owner-login">
+             <h2 class="text-xl font-bold text-gray-800 mb-4">Owner View</h2>
+             <div class="flex items-center space-x-2">
+                <input type="password" id="owner-password" class="form-input w-full md:w-1/3 p-3 border border-gray-300 rounded-lg" placeholder="Enter Password">
+                <button id="show-owner-view" class="bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700">Show Payout</button>
+                <p id="password-error" class="text-red-500 text-sm hidden">Incorrect Password</p>
+             </div>
+        </div>
+
+        <div id="owner-results-container" class="hidden mt-4">
+             <h2 class="text-xl font-bold text-gray-800 mb-4">Dealer Payout & Charges</h2>
+             <div class="flex justify-between items-center mb-4">
+                 <div class="flex items-center space-x-2">
+                    <label for="sweep-charge-percent" class="block text-sm font-medium text-gray-700">Sweep Charge %:</label>
+                    <input type="number" id="sweep-charge-percent" class="form-input w-24 p-2 border border-gray-300 rounded-lg" placeholder="e.g., 2" value="0">
+                </div>
+                <button id="hide-owner-view" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 text-sm">Hide Details</button>
+             </div>
+             <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full EMI on Card</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Part Payment</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full Sweep</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="owner-results-body">
+                        <!-- Owner payout rows will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Comprehensive data generated to provide full options for all models.
+        let dealsData = [];
+        const modelsAndPrices = [
+            { model: "DESTINI PRIME (OBD-2)", onRoadPrice: 87299 },
+            { model: "Destini 110", onRoadPrice: 87885 },
+            { model: "Destini 125 VX New", onRoadPrice: 92357 },
+            { model: "Destini 125 ZX + New", onRoadPrice: 102284 },
+            { model: "Destini 125 ZX New", onRoadPrice: 101278 },
+            { model: "GLAMOUR X DRS SELF", onRoadPrice: 99144 },
+            { model: "GLAMOUR X DSS SELF", onRoadPrice: 107182 },
+            { model: "HF -DLX DRS ALL BLACK OBD-2", onRoadPrice: 74584 },
+            { model: "HF -DLX DRS I3S OBD-2", onRoadPrice: 75082 },
+            { model: "HF- DLX DRS (OBD-2)", onRoadPrice: 73378 },
+            { model: "HF-DLX PRO", onRoadPrice: 78902 },
+            { model: "KARIZMA XMR", onRoadPrice: 201224 },
+            { model: "PASSION PLUS (OBD-2)", onRoadPrice: 90595 },
+            { model: "PLEASURE + VX- Fi Digi-Analog", onRoadPrice: 86096 },
+            { model: "PLEASURE + VX- Fi Digi-Analog (OBD-2)", onRoadPrice: 87906 },
+            { model: "SPL + XTEC 2.0 (OBD-2)", onRoadPrice: 94402 },
+            { model: "SPL AHO (OBD-2)", onRoadPrice: 87556 },
+            { model: "SPL I3S (OBD-2)", onRoadPrice: 88846 },
+            { model: "SPL XTEC DISC.", onRoadPrice: 93196 },
+            { model: "SPL XTEC DISC. (OBD-2)", onRoadPrice: 94955 },
+            { model: "SPL XTEC OBD-2", onRoadPrice: 91631 },
+            { model: "SPL XTECH OBD-1", onRoadPrice: 89874 },
+            { model: "SUPER SPL XTEC (OBD-2)", onRoadPrice: 95491 },
+            { model: "SUPER SPL XTEC DSS (OBD-2)", onRoadPrice: 100112 },
+            { model: "XOOM 110 COMPACT EDITION", onRoadPrice: 95206 },
+            { model: "XOOM 125", onRoadPrice: 109188 },
+            { model: "XPULSE 200 4V E-20", onRoadPrice: 159825 },
+            { model: "XPULSE 200 4V New", onRoadPrice: 163203 },
+            { model: "XPULSE 200 4V Pro", onRoadPrice: 176280 },
+            { model: "XTREME 125 ABS", onRoadPrice: 109806 },
+            { model: "XTREME 125 ABS DUAL CH ABS", onRoadPrice: 122894 },
+            { model: "XTREME 125 IBS", onRoadPrice: 105444 },
+            { model: "Xtreme 160R 2V", onRoadPrice: 125451 },
+            { model: "Xtreme 160R 4V", onRoadPrice: 153788 }
+        ];
+        
+        // Updated bank list based on Nov 2025 PDF
+        const bankOffers = { 
+            "HDFC": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.20 },
+            "Bank of Baroda": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.20 }, 
+            "IDFC": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 }, 
+            "AU": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
+            "Canara Bank": { tenures: [6, 9, 12, 18, 24] }, // ROI is tenure-dependent
+            "ONE Card": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
+            // Added new banks from PDF with default 16% ROI as no specific data was provided
+            "Federal Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
+            "RBL Bank": { tenures: [6, 9, 12, 18, 24] }, // ROI is tenure-dependent
+            "Kotak Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 }
+        };
+        
+        // Updated payout list (removed ICICI, added new banks with 0% payout)
+        const dealerPayouts = {
+            "HDFC": { 6: 0.02, 9: 0.02, 12: 0.03, 18: 0.04, 24: 0.04 },
+            "Bank of Baroda": { 6: 0.04, 9: 0.04, 12: 0.04, 18: 0.04, 24: 0.04 },
+            "ONE Card": { 6: 0.02, 9: 0.02, 12: 0.025, 18: 0.025, 24: 0.025 },
+            // Default 0% payout for new banks
+            "IDFC": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "AU": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Canara Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Federal Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "RBL Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Kotak Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 }
+        };
+
+        modelsAndPrices.forEach(m => {
+            for (const [bank, offer] of Object.entries(bankOffers)) {
+                offer.tenures.forEach(t => {
+                    let currentRoi;
+                    if (bank === 'Canara Bank') {
+                        currentRoi = (t <= 9) ? 0.13 : 0.14;
+                    } else if (bank === 'RBL Bank') {
+                        currentRoi = (t === 6) ? 0.14 : 0.15;
+                    }
+                     else {
+                        currentRoi = offer.roiPercent;
+                    }
+                    dealsData.push({ model: m.model, bank: bank, tenure: t, onRoadPrice: m.onRoadPrice, roiPercent: currentRoi });
+                });
+            }
+        });
+
+        // DOM Elements
+        const modelSelect = document.getElementById('model');
+        const bankSelect = document.getElementById('bank');
+        const tenureSelect = document.getElementById('tenure');
+        const partPaymentInput = document.getElementById('partPayment');
+        const resultsContainer = document.getElementById('results-container');
+        const noSelectionDiv = document.getElementById('no-selection');
+        const resultsBody = document.getElementById('results-body');
+        const finalSavings = document.getElementById('final-savings');
+        
+        const ownerLogin = document.getElementById('owner-login');
+        const ownerPasswordInput = document.getElementById('owner-password');
+        const showOwnerViewBtn = document.getElementById('show-owner-view');
+        const hideOwnerViewBtn = document.getElementById('hide-owner-view');
+        const passwordError = document.getElementById('password-error');
+        const ownerResultsContainer = document.getElementById('owner-results-container');
+        const ownerResultsBody = document.getElementById('owner-results-body');
+        const sweepChargePercentInput = document.getElementById('sweep-charge-percent');
+
+        // Helper function to format currency
+        const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount);
+
+        // EMI Calculation (PMT formula)
+        const calculateEMI = (principal, annualRate, tenureMonths) => {
+            if (principal <= 0 || tenureMonths <= 0) return 0;
+            if (annualRate <= 0) return principal / tenureMonths;
+            const monthlyRate = annualRate / 12;
+            const emi = principal * monthlyRate * (Math.pow(1 + monthlyRate, tenureMonths)) / (Math.pow(1 + monthlyRate, tenureMonths) - 1);
+            return emi;
+        };
+
+        const populateModels = () => {
+            const models = [...new Set(dealsData.map(d => d.model))];
+            models.sort();
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.textContent = model;
+                modelSelect.appendChild(option);
+            });
+        };
+
+        const populateBanks = (selectedModel) => {
+            bankSelect.innerHTML = '<option value="">-- Select Bank --</option>';
+            tenureSelect.innerHTML = '<option value="">-- Select Tenure --</option>';
+            bankSelect.disabled = true;
+            tenureSelect.disabled = true;
+
+            if (!selectedModel) return;
+
+            const banks = [...new Set(dealsData.filter(d => d.model === selectedModel).map(d => d.bank))];
+            banks.sort();
+            banks.forEach(bank => {
+                const option = document.createElement('option');
+                option.value = bank;
+                option.textContent = bank;
+                bankSelect.appendChild(option);
+            });
+            bankSelect.disabled = false;
+        };
+        
+        const populateTenures = (selectedModel, selectedBank) => {
+            tenureSelect.innerHTML = '<option value="">-- Select Tenure --</option>';
+            tenureSelect.disabled = true;
+
+            if (!selectedModel || !selectedBank) return;
+            
+            const tenures = [...new Set(dealsData.filter(d => d.model === selectedModel && d.bank === selectedBank).map(d => d.tenure))];
+            tenures.sort((a, b) => a - b);
+            tenures.forEach(tenure => {
+                const option = document.createElement('option');
+                option.value = tenure;
+                option.textContent = `${tenure} Months`;
+                tenureSelect.appendChild(option);
+            });
+            tenureSelect.disabled = false;
+        };
+
+        const displayResults = (data) => {
+            resultsBody.innerHTML = '';
+            const rows = [
+                { label: 'On-Road Price (₹)', full: formatCurrency(data.full.onRoadPrice), part: `${formatCurrency(data.part.cardAmount)} <span class='text-gray-500 text-xs'>(Card)</span><br/>+ ${formatCurrency(data.part.sweepAmount)} <span class='text-gray-500 text-xs'>(Sweep)</span>`, sweep: formatCurrency(data.sweep.onRoadPrice) },
+                { label: 'Cashback %', full: `${(data.full.cashbackPercent * 100).toFixed(1)}%`, part: `${(data.part.cashbackPercent * 100).toFixed(1)}%`, sweep: `${(data.sweep.cashbackPercent * 100).toFixed(1)}%` },
+                { label: 'Cashback (₹)', full: formatCurrency(data.full.cashbackAmount), part: formatCurrency(data.part.cashbackAmount), sweep: formatCurrency(data.sweep.cashbackAmount) },
+                { label: 'You Save (₹)', full: `<span class="font-bold text-green-600">${formatCurrency(data.full.youSave)}</span>`, part: `<span class="font-bold text-green-600">${formatCurrency(data.part.youSave)}</span>`, sweep: `<span class="font-bold text-green-600">${formatCurrency(data.sweep.youSave)}</span>` },
+                { label: 'Effective Price (₹)', full: formatCurrency(data.full.effectivePrice), part: formatCurrency(data.part.effectivePrice), sweep: formatCurrency(data.sweep.effectivePrice) },
+                { label: 'ROI %', full: `${(data.full.roiPercent * 100).toFixed(2)}% p.a.`, part: `${(data.part.roiPercent * 100).toFixed(2)}% p.a.`, sweep: 'N/A' },
+                { label: 'EMI with ROI (₹)', full: formatCurrency(data.full.emi), part: formatCurrency(data.part.emi), sweep: 'N/A' },
+                { label: 'Total Outgo (₹)', full: formatCurrency(data.full.totalOutgo), part: formatCurrency(data.part.totalOutgo), sweep: formatCurrency(data.sweep.totalOutgo) },
+                { label: 'Extra Savings/Cost (₹)', full: `<span class="${data.full.extraDiscount >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.full.extraDiscount)}</span>`, part: `<span class="${data.part.extraDiscount >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.part.extraDiscount)}</span>`, sweep: `<span class="text-green-600">${formatCurrency(data.sweep.youSave)}</span>` },
+            ];
+
+            rows.forEach(rowData => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${rowData.label}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.full}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.part}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.sweep}</td>
+                `;
+                resultsBody.appendChild(tr);
+            });
+            
+            const totalSaving = data.part.youSave;
+            finalSavings.innerHTML = `Total Savings on Card (Part Payment): <span class="text-2xl">${formatCurrency(totalSaving)}</span>`;
+        };
+        
+        const displayOwnerResults = (data) => {
+            ownerResultsBody.innerHTML = '';
+            if (!data) return;
+
+            const rows = [
+                { label: 'Dealer Payout (₹)', full: formatCurrency(data.full.payout), part: formatCurrency(data.part.payout), sweep: data.sweep.payout },
+                { label: 'Sweep Charge (₹)', full: formatCurrency(data.full.sweepCharge), part: formatCurrency(data.part.sweepCharge), sweep: formatCurrency(data.sweep.sweepCharge) },
+                { label: 'Pine Labs Fee (0.75%)', full: `(${formatCurrency(data.full.pineFee)})`, part: `(${formatCurrency(data.part.pineFee)})`, sweep: data.sweep.pineFee },
+                { label: 'Acquirer MDR (1.5%)', full: `(${formatCurrency(data.full.mdrFee)})`, part: `(${formatCurrency(data.part.mdrFee)})`, sweep: `(${formatCurrency(data.sweep.mdrFee)})` },
+                { 
+                    label: 'Net Benefit / (Cost)', 
+                    full: `<span class="font-bold ${data.full.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.full.netBenefit)}</span>`, 
+                    part: `<span class="font-bold ${data.part.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.part.netBenefit)}</span>`,
+                    sweep: `<span class="font-bold ${data.sweep.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.sweep.netBenefit)}</span>`
+                },
+            ];
+
+            rows.forEach(rowData => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${rowData.label}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.full}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.part}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.sweep}</td>
+                `;
+                ownerResultsBody.appendChild(tr);
+            });
+        };
+
+        const calculateAndDisplay = () => {
+            const selectedModel = modelSelect.value;
+            const selectedBank = bankSelect.value;
+            const selectedTenure = parseInt(tenureSelect.value, 10);
+            const partPaymentAmount = parseFloat(partPaymentInput.value) || 0;
+            const sweepChargePercent = parseFloat(sweepChargePercentInput.value) / 100 || 0;
+
+            if (!selectedModel || !selectedBank || !selectedTenure) {
+                resultsContainer.classList.add('hidden');
+                noSelectionDiv.classList.remove('hidden');
+                partPaymentInput.disabled = true;
+                partPaymentInput.value = '';
+                ownerResultsBody.innerHTML = ''; // Clear owner view
+                return;
+            }
+
+            resultsContainer.classList.remove('hidden');
+            noSelectionDiv.classList.add('hidden');
+            partPaymentInput.disabled = false;
+
+            const deal = dealsData.find(d => d.model === selectedModel && d.bank === selectedBank && d.tenure === selectedTenure);
+
+            if (!deal) return;
+
+            // --- Full EMI Calculation ---
+            const full = {};
+            full.onRoadPrice = deal.onRoadPrice;
+            // Updated: All banks in the list now get this offer
+            full.cashbackPercent = full.onRoadPrice >= 100000 ? 0.075 : 0.05; // 100001 in PDF, but 1lac is common
+            const fullCashbackCap = full.onRoadPrice >= 100000 ? 10000 : 5000;
+            const calculatedFullCashback = full.onRoadPrice * full.cashbackPercent;
+            full.cashbackAmount = Math.min(calculatedFullCashback, fullCashbackCap);
+
+            full.youSave = full.cashbackAmount;
+            full.effectivePrice = full.onRoadPrice - full.cashbackAmount;
+            full.roiPercent = deal.roiPercent;
+            full.emi = calculateEMI(full.effectivePrice, full.roiPercent, deal.tenure);
+            full.totalOutgo = full.emi * deal.tenure;
+            full.extraDiscount = full.onRoadPrice - full.totalOutgo;
+
+            // --- Part Payment Calculation ---
+            const part = {};
+            part.onRoadPrice = deal.onRoadPrice;
+            part.cardAmount = Math.max(0, Math.min(partPaymentAmount, part.onRoadPrice));
+            part.sweepAmount = part.onRoadPrice - part.cardAmount;
+            
+            // Updated: All banks in the list now get this offer
+            part.cashbackPercent = part.cardAmount >= 100000 ? 0.075 : 0.05;
+            const partCashbackCap = part.cardAmount >= 100000 ? 10000 : 5000;
+            const calculatedPartCashback = part.cardAmount * part.cashbackPercent;
+            part.cashbackAmount = Math.min(calculatedPartCashback, partCashbackCap);
+            
+            part.youSave = part.cashbackAmount;
+            part.effectivePrice = part.onRoadPrice - part.cashbackAmount;
+            part.roiPercent = deal.roiPercent;
+            const partEmiPrincipal = Math.max(0, part.cardAmount);
+            part.emi = calculateEMI(partEmiPrincipal - part.cashbackAmount, part.roiPercent, deal.tenure);
+            part.totalOutgo = (part.emi * deal.tenure) + part.sweepAmount;
+            part.extraDiscount = part.onRoadPrice - part.totalOutgo;
+
+            // --- Full Sweep Calculation ---
+            const sweep = {};
+            sweep.onRoadPrice = deal.onRoadPrice;
+            sweep.totalOutgo = deal.onRoadPrice;
+            sweep.cashbackPercent = 0;
+            sweep.cashbackAmount = 0;
+
+            // Updated: Removed HDFC, only Canara Bank has a full swipe offer
+            if (selectedBank === 'Canara Bank') {
+                if (sweep.onRoadPrice >= 100001) {
+                    sweep.cashbackPercent = 0.075;
+                    const calculatedSweepCashback = sweep.onRoadPrice * sweep.cashbackPercent;
+                    sweep.cashbackAmount = Math.min(calculatedSweepCashback, 10000);
+                } else {
+                    sweep.cashbackPercent = 0.05;
+                    const calculatedSweepCashback = sweep.onRoadPrice * sweep.cashbackPercent;
+                    sweep.cashbackAmount = Math.min(calculatedSweepCashback, 5000);
+                }
+            }
+            
+            sweep.youSave = sweep.cashbackAmount;
+            sweep.effectivePrice = sweep.onRoadPrice - sweep.cashbackAmount;
+            
+            // --- Owner Payout Calculation ---
+            const owner = {};
+            // Full EMI Payout
+            owner.full = {};
+            const fullPayoutBankData = dealerPayouts[selectedBank] || {};
+            const fullPayoutPercent = fullPayoutBankData[selectedTenure] || 0;
+            owner.full.payout = full.onRoadPrice * fullPayoutPercent;
+            owner.full.sweepCharge = full.onRoadPrice * sweepChargePercent;
+            owner.full.pineFee = full.onRoadPrice * 0.0075;
+            owner.full.mdrFee = full.onRoadPrice * 0.015;
+            owner.full.netBenefit = owner.full.payout + owner.full.sweepCharge - owner.full.pineFee - owner.full.mdrFee;
+            // Part Payment Payout
+            owner.part = {};
+            const partPayoutBankData = dealerPayouts[selectedBank] || {};
+            const partPayoutPercent = partPayoutBankData[selectedTenure] || 0;
+            owner.part.payout = part.cardAmount * partPayoutPercent;
+            owner.part.sweepCharge = part.cardAmount * sweepChargePercent;
+            owner.part.pineFee = part.cardAmount * 0.0075;
+            owner.part.mdrFee = part.cardAmount * 0.015;
+            owner.part.netBenefit = owner.part.payout + owner.part.sweepCharge - owner.part.pineFee - owner.part.mdrFee;
+            // Full Sweep Payout
+            owner.sweep = {};
+            owner.sweep.payout = 'N/A';
+            owner.sweep.sweepCharge = sweep.onRoadPrice * sweepChargePercent;
+            owner.sweep.pineFee = 'N/A';
+            owner.sweep.mdrFee = sweep.onRoadPrice * 0.015;
+            owner.sweep.netBenefit = owner.sweep.sweepCharge - owner.sweep.mdrFee;
+            
+            displayResults({ full, part, sweep });
+            if (!ownerResultsContainer.classList.contains('hidden')) {
+                displayOwnerResults(owner);
+            }
+        };
+        
+        // Event Listeners
+        modelSelect.addEventListener('change', (e) => {
+            populateBanks(e.target.value);
+            calculateAndDisplay();
+        });
+
+        bankSelect.addEventListener('change', (e) => {
+            populateTenures(modelSelect.value, e.target.value);
+            calculateAndDisplay();
+        });
+        
+        tenureSelect.addEventListener('change', calculateAndDisplay);
+        partPaymentInput.addEventListener('input', calculateAndDisplay);
+        sweepChargePercentInput.addEventListener('input', calculateAndDisplay);
+
+        showOwnerViewBtn.addEventListener('click', () => {
+            if (ownerPasswordInput.value === 'owner123') {
+                ownerResultsContainer.classList.remove('hidden');
+                ownerLogin.classList.add('hidden');
+                passwordError.classList.add('hidden');
+                calculateAndDisplay(); // Recalculate and display owner view
+            } else {
+                passwordError.classList.remove('hidden');
+            }
+            ownerPasswordInput.value = '';
+        });
+
+        hideOwnerViewBtn.addEventListener('click', () => {
+            ownerResultsContainer.classList.add('hidden');
+            ownerLogin.classList.remove('hidden');
+        });
+
+        // Initial population
+        window.onload = () => {
+            populateModels();
+        };
+
+    </script>
+</body>
+</html>
