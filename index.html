@@ -46,7 +46,6 @@
             <p class="text-gray-500 mt-1">Select a model to find the best bank offers</p>
         </header>
 
-        <!-- Main controls section -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="md:col-span-2">
                 <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Select Model</label>
@@ -68,14 +67,12 @@
             </div>
         </div>
         
-        <!-- Part Payment Input -->
         <div class="mb-8">
             <label for="partPayment" class="block text-sm font-medium text-gray-700 mb-1">Part Payment on Card (₹)</label>
             <input type="number" id="partPayment" class="form-input w-full md:w-1/2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out" placeholder="Enter amount for card payment" disabled>
         </div>
 
 
-        <!-- Results Display -->
         <div id="results-container" class="hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -88,8 +85,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200" id="results-body">
-                        <!-- Rows will be dynamically inserted here -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
              <div class="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg text-center">
@@ -102,44 +98,6 @@
 
     </div>
     
-    <!-- Owner View Section -->
-    <div class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 mt-6">
-        <div id="owner-login">
-             <h2 class="text-xl font-bold text-gray-800 mb-4">Owner View</h2>
-             <div class="flex items-center space-x-2">
-                <input type="password" id="owner-password" class="form-input w-full md:w-1/3 p-3 border border-gray-300 rounded-lg" placeholder="Enter Password">
-                <button id="show-owner-view" class="bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700">Show Payout</button>
-                <p id="password-error" class="text-red-500 text-sm hidden">Incorrect Password</p>
-             </div>
-        </div>
-
-        <div id="owner-results-container" class="hidden mt-4">
-             <h2 class="text-xl font-bold text-gray-800 mb-4">Dealer Payout & Charges</h2>
-             <div class="flex justify-between items-center mb-4">
-                 <div class="flex items-center space-x-2">
-                    <label for="sweep-charge-percent" class="block text-sm font-medium text-gray-700">Sweep Charge %:</label>
-                    <input type="number" id="sweep-charge-percent" class="form-input w-24 p-2 border border-gray-300 rounded-lg" placeholder="e.g., 2" value="0">
-                </div>
-                <button id="hide-owner-view" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 text-sm">Hide Details</button>
-             </div>
-             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full EMI on Card</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Part Payment</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full Sweep</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="owner-results-body">
-                        <!-- Owner payout rows will be dynamically inserted here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
 
     <script>
         // Comprehensive data generated to provide full options for all models.
@@ -195,19 +153,6 @@
             "Kotak Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 }
         };
         
-        // Updated payout list (removed ICICI, added new banks with 0% payout)
-        const dealerPayouts = {
-            "HDFC": { 6: 0.02, 9: 0.02, 12: 0.03, 18: 0.04, 24: 0.04 },
-            "Bank of Baroda": { 6: 0.04, 9: 0.04, 12: 0.04, 18: 0.04, 24: 0.04 },
-            "ONE Card": { 6: 0.02, 9: 0.02, 12: 0.025, 18: 0.025, 24: 0.025 },
-            // Default 0% payout for new banks
-            "IDFC": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
-            "AU": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
-            "Canara Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
-            "Federal Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
-            "RBL Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
-            "Kotak Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 }
-        };
 
         modelsAndPrices.forEach(m => {
             for (const [bank, offer] of Object.entries(bankOffers)) {
@@ -236,15 +181,6 @@
         const resultsBody = document.getElementById('results-body');
         const finalSavings = document.getElementById('final-savings');
         
-        const ownerLogin = document.getElementById('owner-login');
-        const ownerPasswordInput = document.getElementById('owner-password');
-        const showOwnerViewBtn = document.getElementById('show-owner-view');
-        const hideOwnerViewBtn = document.getElementById('hide-owner-view');
-        const passwordError = document.getElementById('password-error');
-        const ownerResultsContainer = document.getElementById('owner-results-container');
-        const ownerResultsBody = document.getElementById('owner-results-body');
-        const sweepChargePercentInput = document.getElementById('sweep-charge-percent');
-
         // Helper function to format currency
         const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount);
 
@@ -333,48 +269,17 @@
             finalSavings.innerHTML = `Total Savings on Card (Part Payment): <span class="text-2xl">${formatCurrency(totalSaving)}</span>`;
         };
         
-        const displayOwnerResults = (data) => {
-            ownerResultsBody.innerHTML = '';
-            if (!data) return;
-
-            const rows = [
-                { label: 'Dealer Payout (₹)', full: formatCurrency(data.full.payout), part: formatCurrency(data.part.payout), sweep: data.sweep.payout },
-                { label: 'Sweep Charge (₹)', full: formatCurrency(data.full.sweepCharge), part: formatCurrency(data.part.sweepCharge), sweep: formatCurrency(data.sweep.sweepCharge) },
-                { label: 'Pine Labs Fee (0.75%)', full: `(${formatCurrency(data.full.pineFee)})`, part: `(${formatCurrency(data.part.pineFee)})`, sweep: data.sweep.pineFee },
-                { label: 'Acquirer MDR (1.5%)', full: `(${formatCurrency(data.full.mdrFee)})`, part: `(${formatCurrency(data.part.mdrFee)})`, sweep: `(${formatCurrency(data.sweep.mdrFee)})` },
-                { 
-                    label: 'Net Benefit / (Cost)', 
-                    full: `<span class="font-bold ${data.full.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.full.netBenefit)}</span>`, 
-                    part: `<span class="font-bold ${data.part.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.part.netBenefit)}</span>`,
-                    sweep: `<span class="font-bold ${data.sweep.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.sweep.netBenefit)}</span>`
-                },
-            ];
-
-            rows.forEach(rowData => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${rowData.label}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.full}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.part}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.sweep}</td>
-                `;
-                ownerResultsBody.appendChild(tr);
-            });
-        };
-
         const calculateAndDisplay = () => {
             const selectedModel = modelSelect.value;
             const selectedBank = bankSelect.value;
             const selectedTenure = parseInt(tenureSelect.value, 10);
             const partPaymentAmount = parseFloat(partPaymentInput.value) || 0;
-            const sweepChargePercent = parseFloat(sweepChargePercentInput.value) / 100 || 0;
 
             if (!selectedModel || !selectedBank || !selectedTenure) {
                 resultsContainer.classList.add('hidden');
                 noSelectionDiv.classList.remove('hidden');
                 partPaymentInput.disabled = true;
                 partPaymentInput.value = '';
-                ownerResultsBody.innerHTML = ''; // Clear owner view
                 return;
             }
 
@@ -445,38 +350,7 @@
             sweep.youSave = sweep.cashbackAmount;
             sweep.effectivePrice = sweep.onRoadPrice - sweep.cashbackAmount;
             
-            // --- Owner Payout Calculation ---
-            const owner = {};
-            // Full EMI Payout
-            owner.full = {};
-            const fullPayoutBankData = dealerPayouts[selectedBank] || {};
-            const fullPayoutPercent = fullPayoutBankData[selectedTenure] || 0;
-            owner.full.payout = full.onRoadPrice * fullPayoutPercent;
-            owner.full.sweepCharge = full.onRoadPrice * sweepChargePercent;
-            owner.full.pineFee = full.onRoadPrice * 0.0075;
-            owner.full.mdrFee = full.onRoadPrice * 0.015;
-            owner.full.netBenefit = owner.full.payout + owner.full.sweepCharge - owner.full.pineFee - owner.full.mdrFee;
-            // Part Payment Payout
-            owner.part = {};
-            const partPayoutBankData = dealerPayouts[selectedBank] || {};
-            const partPayoutPercent = partPayoutBankData[selectedTenure] || 0;
-            owner.part.payout = part.cardAmount * partPayoutPercent;
-            owner.part.sweepCharge = part.cardAmount * sweepChargePercent;
-            owner.part.pineFee = part.cardAmount * 0.0075;
-            owner.part.mdrFee = part.cardAmount * 0.015;
-            owner.part.netBenefit = owner.part.payout + owner.part.sweepCharge - owner.part.pineFee - owner.part.mdrFee;
-            // Full Sweep Payout
-            owner.sweep = {};
-            owner.sweep.payout = 'N/A';
-            owner.sweep.sweepCharge = sweep.onRoadPrice * sweepChargePercent;
-            owner.sweep.pineFee = 'N/A';
-            owner.sweep.mdrFee = sweep.onRoadPrice * 0.015;
-            owner.sweep.netBenefit = owner.sweep.sweepCharge - owner.sweep.mdrFee;
-            
             displayResults({ full, part, sweep });
-            if (!ownerResultsContainer.classList.contains('hidden')) {
-                displayOwnerResults(owner);
-            }
         };
         
         // Event Listeners
@@ -492,24 +366,6 @@
         
         tenureSelect.addEventListener('change', calculateAndDisplay);
         partPaymentInput.addEventListener('input', calculateAndDisplay);
-        sweepChargePercentInput.addEventListener('input', calculateAndDisplay);
-
-        showOwnerViewBtn.addEventListener('click', () => {
-            if (ownerPasswordInput.value === 'owner123') {
-                ownerResultsContainer.classList.remove('hidden');
-                ownerLogin.classList.add('hidden');
-                passwordError.classList.add('hidden');
-                calculateAndDisplay(); // Recalculate and display owner view
-            } else {
-                passwordError.classList.remove('hidden');
-            }
-            ownerPasswordInput.value = '';
-        });
-
-        hideOwnerViewBtn.addEventListener('click', () => {
-            ownerResultsContainer.classList.add('hidden');
-            ownerLogin.classList.remove('hidden');
-        });
 
         // Initial population
         window.onload = () => {
