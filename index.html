@@ -98,61 +98,104 @@
 
     </div>
     
+    <div class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 mt-6">
+        <div id="owner-login">
+             <h2 class="text-xl font-bold text-gray-800 mb-4">Owner View</h2>
+             <div class="flex items-center space-x-2">
+                <input type="password" id="owner-password" class="form-input w-full md:w-1/3 p-3 border border-gray-300 rounded-lg" placeholder="Enter Password">
+                <button id="show-owner-view" class="bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700">Show Payout</button>
+                <p id="password-error" class="text-red-500 text-sm hidden">Incorrect Password</p>
+             </div>
+        </div>
+
+        <div id="owner-results-container" class="hidden mt-4">
+             <h2 class="text-xl font-bold text-gray-800 mb-4">Dealer Payout & Charges</h2>
+             <div class="flex justify-between items-center mb-4">
+                 <div class="flex items-center space-x-2">
+                    <label for="sweep-charge-percent" class="block text-sm font-medium text-gray-700">Sweep Charge %:</label>
+                    <input type="number" id="sweep-charge-percent" class="form-input w-24 p-2 border border-gray-300 rounded-lg" placeholder="e.g., 2" value="0">
+                </div>
+                <button id="hide-owner-view" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 text-sm">Hide Details</button>
+             </div>
+             <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full EMI on Card</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Part Payment</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full Sweep</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="owner-results-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 
     <script>
-        // Comprehensive data generated to provide full options for all models.
         let dealsData = [];
         const modelsAndPrices = [
-            { model: "DESTINI PRIME (OBD-2)", onRoadPrice: 87299 },
-            { model: "Destini 110", onRoadPrice: 87885 },
-            { model: "Destini 125 VX New", onRoadPrice: 92357 },
-            { model: "Destini 125 ZX + New", onRoadPrice: 102284 },
-            { model: "Destini 125 ZX New", onRoadPrice: 101278 },
-            { model: "GLAMOUR X DRS SELF", onRoadPrice: 99144 },
-            { model: "GLAMOUR X DSS SELF", onRoadPrice: 107182 },
-            { model: "HF -DLX DRS ALL BLACK OBD-2", onRoadPrice: 74584 },
-            { model: "HF -DLX DRS I3S OBD-2", onRoadPrice: 75082 },
-            { model: "HF- DLX DRS (OBD-2)", onRoadPrice: 73378 },
-            { model: "HF-DLX PRO", onRoadPrice: 78902 },
-            { model: "KARIZMA XMR", onRoadPrice: 201224 },
-            { model: "PASSION PLUS (OBD-2)", onRoadPrice: 90595 },
-            { model: "PLEASURE + VX- Fi Digi-Analog", onRoadPrice: 86096 },
-            { model: "PLEASURE + VX- Fi Digi-Analog (OBD-2)", onRoadPrice: 87906 },
-            { model: "SPL + XTEC 2.0 (OBD-2)", onRoadPrice: 94402 },
-            { model: "SPL AHO (OBD-2)", onRoadPrice: 87556 },
-            { model: "SPL I3S (OBD-2)", onRoadPrice: 88846 },
-            { model: "SPL XTEC DISC.", onRoadPrice: 93196 },
-            { model: "SPL XTEC DISC. (OBD-2)", onRoadPrice: 94955 },
-            { model: "SPL XTEC OBD-2", onRoadPrice: 91631 },
-            { model: "SPL XTECH OBD-1", onRoadPrice: 89874 },
-            { model: "SUPER SPL XTEC (OBD-2)", onRoadPrice: 95491 },
-            { model: "SUPER SPL XTEC DSS (OBD-2)", onRoadPrice: 100112 },
-            { model: "XOOM 110 COMPACT EDITION", onRoadPrice: 95206 },
-            { model: "XOOM 125", onRoadPrice: 109188 },
+            { model: "HF-DLX KICK OBD-2", onRoadPrice: 70917 },
+            { model: "HF- DLX DRS (OBD-2)", onRoadPrice: 74192 },
+            { model: "HF -DLX DRS ALL BLACK OBD-2", onRoadPrice: 75398 },
+            { model: "HF -DLX DRS I3S OBD-2", onRoadPrice: 75904 },
+            { model: "HF-DLX PRO", onRoadPrice: 79724 },
+            { model: "SPL AHO (OBD-2)", onRoadPrice: 87824 },
+            { model: "SPL I3S (OBD-2)", onRoadPrice: 89122 },
+            { model: "SPL I3S ADD.", onRoadPrice: 90632 },
+            { model: "SPL XTECH OBD-1", onRoadPrice: 90150 },
+            { model: "SPL XTEC OBD-2", onRoadPrice: 91908 },
+            { model: "SPL XTEC DISC. (OBD-2)", onRoadPrice: 95223 },
+            { model: "SPL + XTEC 2.0 (OBD-2)", onRoadPrice: 94671 },
+            { model: "PASSION PLUS (OBD-2)", onRoadPrice: 90864 },
+            { model: "SUPER SPL XTEC (OBD-2)", onRoadPrice: 95759 },
+            { model: "SUPER SPL XTEC DSS (OBD-2)", onRoadPrice: 100381 },
             { model: "XPULSE 200 4V E-20", onRoadPrice: 159825 },
             { model: "XPULSE 200 4V New", onRoadPrice: 163203 },
             { model: "XPULSE 200 4V Pro", onRoadPrice: 176280 },
-            { model: "XTREME 125 ABS", onRoadPrice: 109806 },
-            { model: "XTREME 125 ABS DUAL CH ABS", onRoadPrice: 122894 },
-            { model: "XTREME 125 IBS", onRoadPrice: 105444 },
-            { model: "Xtreme 160R 2V", onRoadPrice: 125451 },
-            { model: "Xtreme 160R 4V", onRoadPrice: 153788 }
+            { model: "KARIZMA XMR", onRoadPrice: 201224 },
+            { model: "GLAMOUR X DRS SELF", onRoadPrice: 99144 },
+            { model: "GLAMOUR X DSS SELF", onRoadPrice: 107182 },
+            { model: "XOOM 110 COMPACT EDITION", onRoadPrice: 95206 },
+            { model: "XOOM 125", onRoadPrice: 110230 },
+            { model: "Destini 110 VX", onRoadPrice: 87885 },
+            { model: "Destini 110 ZX", onRoadPrice: 95756 },
+            { model: "DESTINI PRIME (OBD-2)", onRoadPrice: 88173 },
+            { model: "Destini 125 VX New", onRoadPrice: 93313 },
+            { model: "Destini 125 ZX New", onRoadPrice: 102235 },
+            { model: "Destini 125 ZX + New", onRoadPrice: 103787 },
+            { model: "PLEASURE + VX- Fi Digi-Analog (OBD-2)", onRoadPrice: 87906 },
+            { model: "PLEASURE XTEC", onRoadPrice: 92039 }
         ];
         
-        // Updated bank list based on Nov 2025 PDF
         const bankOffers = { 
             "HDFC": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.20 },
             "Bank of Baroda": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.20 }, 
             "IDFC": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 }, 
             "AU": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
-            "Canara Bank": { tenures: [6, 9, 12, 18, 24] }, // ROI is tenure-dependent
+            "Canara Bank": { tenures: [6, 9, 12, 18, 24] },
             "ONE Card": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
-            // Added new banks from PDF with default 16% ROI as no specific data was provided
             "Federal Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
-            "RBL Bank": { tenures: [6, 9, 12, 18, 24] }, // ROI is tenure-dependent
-            "Kotak Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 }
+            "RBL Bank": { tenures: [6, 9, 12, 18, 24] },
+            "Kotak Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
+            "ICICI Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.20 }
         };
         
+        const dealerPayouts = {
+            "HDFC": { 6: 0.02, 9: 0.02, 12: 0.03, 18: 0.04, 24: 0.04 },
+            "Bank of Baroda": { 6: 0.04, 9: 0.04, 12: 0.04, 18: 0.04, 24: 0.04 },
+            "ONE Card": { 6: 0.02, 9: 0.02, 12: 0.025, 18: 0.025, 24: 0.025 },
+            "IDFC": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "AU": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Canara Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Federal Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "RBL Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Kotak Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "ICICI Bank": { 6: 0.00, 9: 0.04, 12: 0.04, 18: 0.04, 24: 0.04 }
+        };
 
         modelsAndPrices.forEach(m => {
             for (const [bank, offer] of Object.entries(bankOffers)) {
@@ -162,8 +205,7 @@
                         currentRoi = (t <= 9) ? 0.13 : 0.14;
                     } else if (bank === 'RBL Bank') {
                         currentRoi = (t === 6) ? 0.14 : 0.15;
-                    }
-                     else {
+                    } else {
                         currentRoi = offer.roiPercent;
                     }
                     dealsData.push({ model: m.model, bank: bank, tenure: t, onRoadPrice: m.onRoadPrice, roiPercent: currentRoi });
@@ -171,7 +213,6 @@
             }
         });
 
-        // DOM Elements
         const modelSelect = document.getElementById('model');
         const bankSelect = document.getElementById('bank');
         const tenureSelect = document.getElementById('tenure');
@@ -181,10 +222,17 @@
         const resultsBody = document.getElementById('results-body');
         const finalSavings = document.getElementById('final-savings');
         
-        // Helper function to format currency
+        const ownerLogin = document.getElementById('owner-login');
+        const ownerPasswordInput = document.getElementById('owner-password');
+        const showOwnerViewBtn = document.getElementById('show-owner-view');
+        const hideOwnerViewBtn = document.getElementById('hide-owner-view');
+        const passwordError = document.getElementById('password-error');
+        const ownerResultsContainer = document.getElementById('owner-results-container');
+        const ownerResultsBody = document.getElementById('owner-results-body');
+        const sweepChargePercentInput = document.getElementById('sweep-charge-percent');
+
         const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount);
 
-        // EMI Calculation (PMT formula)
         const calculateEMI = (principal, annualRate, tenureMonths) => {
             if (principal <= 0 || tenureMonths <= 0) return 0;
             if (annualRate <= 0) return principal / tenureMonths;
@@ -209,9 +257,7 @@
             tenureSelect.innerHTML = '<option value="">-- Select Tenure --</option>';
             bankSelect.disabled = true;
             tenureSelect.disabled = true;
-
             if (!selectedModel) return;
-
             const banks = [...new Set(dealsData.filter(d => d.model === selectedModel).map(d => d.bank))];
             banks.sort();
             banks.forEach(bank => {
@@ -226,9 +272,7 @@
         const populateTenures = (selectedModel, selectedBank) => {
             tenureSelect.innerHTML = '<option value="">-- Select Tenure --</option>';
             tenureSelect.disabled = true;
-
             if (!selectedModel || !selectedBank) return;
-            
             const tenures = [...new Set(dealsData.filter(d => d.model === selectedModel && d.bank === selectedBank).map(d => d.tenure))];
             tenures.sort((a, b) => a - b);
             tenures.forEach(tenure => {
@@ -253,7 +297,6 @@
                 { label: 'Total Outgo (₹)', full: formatCurrency(data.full.totalOutgo), part: formatCurrency(data.part.totalOutgo), sweep: formatCurrency(data.sweep.totalOutgo) },
                 { label: 'Extra Savings/Cost (₹)', full: `<span class="${data.full.extraDiscount >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.full.extraDiscount)}</span>`, part: `<span class="${data.part.extraDiscount >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.part.extraDiscount)}</span>`, sweep: `<span class="text-green-600">${formatCurrency(data.sweep.youSave)}</span>` },
             ];
-
             rows.forEach(rowData => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -264,22 +307,45 @@
                 `;
                 resultsBody.appendChild(tr);
             });
-            
             const totalSaving = data.part.youSave;
             finalSavings.innerHTML = `Total Savings on Card (Part Payment): <span class="text-2xl">${formatCurrency(totalSaving)}</span>`;
         };
         
+        const displayOwnerResults = (data) => {
+            ownerResultsBody.innerHTML = '';
+            if (!data) return;
+            const rows = [
+                { label: 'Dealer Payout (₹)', full: formatCurrency(data.full.payout), part: formatCurrency(data.part.payout), sweep: data.sweep.payout },
+                { label: 'Sweep Charge (₹)', full: formatCurrency(data.full.sweepCharge), part: formatCurrency(data.part.sweepCharge), sweep: formatCurrency(data.sweep.sweepCharge) },
+                { label: 'Pine Labs Fee (0.75%)', full: `(${formatCurrency(data.full.pineFee)})`, part: `(${formatCurrency(data.part.pineFee)})`, sweep: data.sweep.pineFee },
+                { label: 'Acquirer MDR (1.5%)', full: `(${formatCurrency(data.full.mdrFee)})`, part: `(${formatCurrency(data.part.mdrFee)})`, sweep: `(${formatCurrency(data.sweep.mdrFee)})` },
+                { label: 'Net Benefit / (Cost)', full: `<span class="font-bold ${data.full.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.full.netBenefit)}</span>`, part: `<span class="font-bold ${data.part.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.part.netBenefit)}</span>`, sweep: `<span class="font-bold ${data.sweep.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.sweep.netBenefit)}</span>` },
+            ];
+            rows.forEach(rowData => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${rowData.label}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.full}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.part}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.sweep}</td>
+                `;
+                ownerResultsBody.appendChild(tr);
+            });
+        };
+
         const calculateAndDisplay = () => {
             const selectedModel = modelSelect.value;
             const selectedBank = bankSelect.value;
             const selectedTenure = parseInt(tenureSelect.value, 10);
             const partPaymentAmount = parseFloat(partPaymentInput.value) || 0;
+            const sweepChargePercent = parseFloat(sweepChargePercentInput.value) / 100 || 0;
 
             if (!selectedModel || !selectedBank || !selectedTenure) {
                 resultsContainer.classList.add('hidden');
                 noSelectionDiv.classList.remove('hidden');
                 partPaymentInput.disabled = true;
                 partPaymentInput.value = '';
+                ownerResultsBody.innerHTML = '';
                 return;
             }
 
@@ -288,17 +354,21 @@
             partPaymentInput.disabled = false;
 
             const deal = dealsData.find(d => d.model === selectedModel && d.bank === selectedBank && d.tenure === selectedTenure);
-
             if (!deal) return;
 
             // --- Full EMI Calculation ---
             const full = {};
             full.onRoadPrice = deal.onRoadPrice;
-            // Updated: All banks in the list now get this offer
-            full.cashbackPercent = full.onRoadPrice >= 100000 ? 0.075 : 0.05; // 100001 in PDF, but 1lac is common
-            const fullCashbackCap = full.onRoadPrice >= 100000 ? 10000 : 5000;
-            const calculatedFullCashback = full.onRoadPrice * full.cashbackPercent;
-            full.cashbackAmount = Math.min(calculatedFullCashback, fullCashbackCap);
+            
+            // UPDATED LOGIC: No discount if ICICI
+            if (selectedBank === 'ICICI Bank') {
+                full.cashbackPercent = 0;
+                full.cashbackAmount = 0;
+            } else {
+                full.cashbackPercent = full.onRoadPrice >= 100000 ? 0.075 : 0.05;
+                const fullCashbackCap = full.onRoadPrice >= 100000 ? 10000 : 5000;
+                full.cashbackAmount = Math.min(full.onRoadPrice * full.cashbackPercent, fullCashbackCap);
+            }
 
             full.youSave = full.cashbackAmount;
             full.effectivePrice = full.onRoadPrice - full.cashbackAmount;
@@ -313,17 +383,20 @@
             part.cardAmount = Math.max(0, Math.min(partPaymentAmount, part.onRoadPrice));
             part.sweepAmount = part.onRoadPrice - part.cardAmount;
             
-            // Updated: All banks in the list now get this offer
-            part.cashbackPercent = part.cardAmount >= 100000 ? 0.075 : 0.05;
-            const partCashbackCap = part.cardAmount >= 100000 ? 10000 : 5000;
-            const calculatedPartCashback = part.cardAmount * part.cashbackPercent;
-            part.cashbackAmount = Math.min(calculatedPartCashback, partCashbackCap);
+            // UPDATED LOGIC: No discount if ICICI
+            if (selectedBank === 'ICICI Bank') {
+                part.cashbackPercent = 0;
+                part.cashbackAmount = 0;
+            } else {
+                part.cashbackPercent = part.cardAmount >= 100000 ? 0.075 : 0.05;
+                const partCashbackCap = part.cardAmount >= 100000 ? 10000 : 5000;
+                part.cashbackAmount = Math.min(part.cardAmount * part.cashbackPercent, partCashbackCap);
+            }
             
             part.youSave = part.cashbackAmount;
             part.effectivePrice = part.onRoadPrice - part.cashbackAmount;
             part.roiPercent = deal.roiPercent;
-            const partEmiPrincipal = Math.max(0, part.cardAmount);
-            part.emi = calculateEMI(partEmiPrincipal - part.cashbackAmount, part.roiPercent, deal.tenure);
+            part.emi = calculateEMI(part.cardAmount - part.cashbackAmount, part.roiPercent, deal.tenure);
             part.totalOutgo = (part.emi * deal.tenure) + part.sweepAmount;
             part.extraDiscount = part.onRoadPrice - part.totalOutgo;
 
@@ -333,45 +406,66 @@
             sweep.totalOutgo = deal.onRoadPrice;
             sweep.cashbackPercent = 0;
             sweep.cashbackAmount = 0;
-
-            // Updated: Removed HDFC, only Canara Bank has a full swipe offer
             if (selectedBank === 'Canara Bank') {
-                if (sweep.onRoadPrice >= 100001) {
-                    sweep.cashbackPercent = 0.075;
-                    const calculatedSweepCashback = sweep.onRoadPrice * sweep.cashbackPercent;
-                    sweep.cashbackAmount = Math.min(calculatedSweepCashback, 10000);
-                } else {
-                    sweep.cashbackPercent = 0.05;
-                    const calculatedSweepCashback = sweep.onRoadPrice * sweep.cashbackPercent;
-                    sweep.cashbackAmount = Math.min(calculatedSweepCashback, 5000);
-                }
+                sweep.cashbackPercent = sweep.onRoadPrice >= 100001 ? 0.075 : 0.05;
+                sweep.cashbackAmount = Math.min(sweep.onRoadPrice * sweep.cashbackPercent, sweep.onRoadPrice >= 100001 ? 10000 : 5000);
             }
-            
             sweep.youSave = sweep.cashbackAmount;
             sweep.effectivePrice = sweep.onRoadPrice - sweep.cashbackAmount;
             
+            // --- Owner Payout Calculation ---
+            const owner = {};
+            owner.full = {};
+            const fullPayoutPercent = (dealerPayouts[selectedBank] || {})[selectedTenure] || 0;
+            owner.full.payout = full.onRoadPrice * fullPayoutPercent;
+            owner.full.sweepCharge = full.onRoadPrice * sweepChargePercent;
+            owner.full.pineFee = full.onRoadPrice * 0.0075;
+            owner.full.mdrFee = full.onRoadPrice * 0.015;
+            owner.full.netBenefit = owner.full.payout + owner.full.sweepCharge - owner.full.pineFee - owner.full.mdrFee;
+
+            owner.part = {};
+            const partPayoutPercent = (dealerPayouts[selectedBank] || {})[selectedTenure] || 0;
+            owner.part.payout = part.cardAmount * partPayoutPercent;
+            owner.part.sweepCharge = part.cardAmount * sweepChargePercent;
+            owner.part.pineFee = part.cardAmount * 0.0075;
+            owner.part.mdrFee = part.cardAmount * 0.015;
+            owner.part.netBenefit = owner.part.payout + owner.part.sweepCharge - owner.part.pineFee - owner.part.mdrFee;
+
+            owner.sweep = {};
+            owner.sweep.payout = 'N/A';
+            owner.sweep.sweepCharge = sweep.onRoadPrice * sweepChargePercent;
+            owner.sweep.pineFee = 'N/A';
+            owner.sweep.mdrFee = sweep.onRoadPrice * 0.015;
+            owner.sweep.netBenefit = owner.sweep.sweepCharge - owner.sweep.mdrFee;
+            
             displayResults({ full, part, sweep });
+            if (!ownerResultsContainer.classList.contains('hidden')) displayOwnerResults(owner);
         };
         
-        // Event Listeners
-        modelSelect.addEventListener('change', (e) => {
-            populateBanks(e.target.value);
-            calculateAndDisplay();
-        });
-
-        bankSelect.addEventListener('change', (e) => {
-            populateTenures(modelSelect.value, e.target.value);
-            calculateAndDisplay();
-        });
-        
+        modelSelect.addEventListener('change', (e) => { populateBanks(e.target.value); calculateAndDisplay(); });
+        bankSelect.addEventListener('change', (e) => { populateTenures(modelSelect.value, e.target.value); calculateAndDisplay(); });
         tenureSelect.addEventListener('change', calculateAndDisplay);
         partPaymentInput.addEventListener('input', calculateAndDisplay);
+        sweepChargePercentInput.addEventListener('input', calculateAndDisplay);
 
-        // Initial population
-        window.onload = () => {
-            populateModels();
-        };
+        showOwnerViewBtn.addEventListener('click', () => {
+            if (ownerPasswordInput.value === 'owner123') {
+                ownerResultsContainer.classList.remove('hidden');
+                ownerLogin.classList.add('hidden');
+                passwordError.classList.add('hidden');
+                calculateAndDisplay();
+            } else {
+                passwordError.classList.remove('hidden');
+            }
+            ownerPasswordInput.value = '';
+        });
 
+        hideOwnerViewBtn.addEventListener('click', () => {
+            ownerResultsContainer.classList.add('hidden');
+            ownerLogin.classList.remove('hidden');
+        });
+
+        window.onload = populateModels;
     </script>
 </body>
 </html>
