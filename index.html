@@ -97,6 +97,43 @@
         </div>
 
     </div>
+    
+    <div class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-lg p-6 md:p-8 mt-6">
+        <div id="owner-login">
+             <h2 class="text-xl font-bold text-gray-800 mb-4">Owner View</h2>
+             <div class="flex items-center space-x-2">
+                <input type="password" id="owner-password" class="form-input w-full md:w-1/3 p-3 border border-gray-300 rounded-lg" placeholder="Enter Password">
+                <button id="show-owner-view" class="bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700">Show Payout</button>
+                <p id="password-error" class="text-red-500 text-sm hidden">Incorrect Password</p>
+             </div>
+        </div>
+
+        <div id="owner-results-container" class="hidden mt-4">
+             <h2 class="text-xl font-bold text-gray-800 mb-4">Dealer Payout & Charges</h2>
+             <div class="flex justify-between items-center mb-4">
+                 <div class="flex items-center space-x-2">
+                    <label for="sweep-charge-percent" class="block text-sm font-medium text-gray-700">Sweep Charge %:</label>
+                    <input type="number" id="sweep-charge-percent" class="form-input w-24 p-2 border border-gray-300 rounded-lg" placeholder="e.g., 2" value="0">
+                </div>
+                <button id="hide-owner-view" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 text-sm">Hide Details</button>
+             </div>
+             <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parameter</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full EMI on Card</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Part Payment</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Full Sweep</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="owner-results-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         let dealsData = [];
@@ -131,7 +168,13 @@
             { model: "Destini 125 ZX New", onRoadPrice: 102235 },
             { model: "Destini 125 ZX + New", onRoadPrice: 103787 },
             { model: "PLEASURE + VX- Fi Digi-Analog (OBD-2)", onRoadPrice: 87906 },
-            { model: "PLEASURE XTEC", onRoadPrice: 92039 }
+            { model: "PLEASURE XTEC", onRoadPrice: 92039 },
+	    { model: "XTREME 125R IBS", onRoadPrice: 105444 },
+            { model: "XTREME 125R ABS", onRoadPrice: 109806 },
+            { model: "XTREME 125R Dual ABS", onRoadPrice: 122894 },
+            { model: "XTREME 160R 2V Single Disk", onRoadPrice: 125450 },
+            { model: "XTREME 160R 2V duble disk", onRoadPrice: 130377 },
+            { model: "XTREME 160R 4V", onRoadPrice: 157467 }
         ];
         
         const bankOffers = { 
@@ -145,6 +188,19 @@
             "RBL Bank": { tenures: [6, 9, 12, 18, 24] },
             "Kotak Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.16 },
             "ICICI Bank": { tenures: [6, 9, 12, 18, 24], roiPercent: 0.20 }
+        };
+        
+        const dealerPayouts = {
+            "HDFC": { 6: 0.02, 9: 0.02, 12: 0.03, 18: 0.04, 24: 0.04 },
+            "Bank of Baroda": { 6: 0.04, 9: 0.04, 12: 0.04, 18: 0.04, 24: 0.04 },
+            "ONE Card": { 6: 0.02, 9: 0.02, 12: 0.025, 18: 0.025, 24: 0.025 },
+            "IDFC": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "AU": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Canara Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Federal Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "RBL Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "Kotak Bank": { 6: 0.00, 9: 0.00, 12: 0.00, 18: 0.00, 24: 0.00 },
+            "ICICI Bank": { 6: 0.00, 9: 0.04, 12: 0.04, 18: 0.04, 24: 0.04 }
         };
 
         modelsAndPrices.forEach(m => {
@@ -171,6 +227,15 @@
         const noSelectionDiv = document.getElementById('no-selection');
         const resultsBody = document.getElementById('results-body');
         const finalSavings = document.getElementById('final-savings');
+        
+        const ownerLogin = document.getElementById('owner-login');
+        const ownerPasswordInput = document.getElementById('owner-password');
+        const showOwnerViewBtn = document.getElementById('show-owner-view');
+        const hideOwnerViewBtn = document.getElementById('hide-owner-view');
+        const passwordError = document.getElementById('password-error');
+        const ownerResultsContainer = document.getElementById('owner-results-container');
+        const ownerResultsBody = document.getElementById('owner-results-body');
+        const sweepChargePercentInput = document.getElementById('sweep-charge-percent');
 
         const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount);
 
@@ -251,18 +316,42 @@
             const totalSaving = data.part.youSave;
             finalSavings.innerHTML = `Total Savings on Card (Part Payment): <span class="text-2xl">${formatCurrency(totalSaving)}</span>`;
         };
+        
+        const displayOwnerResults = (data) => {
+            ownerResultsBody.innerHTML = '';
+            if (!data) return;
+            const rows = [
+                { label: 'Dealer Payout (₹)', full: formatCurrency(data.full.payout), part: formatCurrency(data.part.payout), sweep: data.sweep.payout },
+                { label: 'Sweep Charge (₹)', full: formatCurrency(data.full.sweepCharge), part: formatCurrency(data.part.sweepCharge), sweep: formatCurrency(data.sweep.sweepCharge) },
+                { label: 'Pine Labs Fee (0.75%)', full: `(${formatCurrency(data.full.pineFee)})`, part: `(${formatCurrency(data.part.pineFee)})`, sweep: data.sweep.pineFee },
+                { label: 'Acquirer MDR (1.5%)', full: `(${formatCurrency(data.full.mdrFee)})`, part: `(${formatCurrency(data.part.mdrFee)})`, sweep: `(${formatCurrency(data.sweep.mdrFee)})` },
+                { label: 'Net Benefit / (Cost)', full: `<span class="font-bold ${data.full.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.full.netBenefit)}</span>`, part: `<span class="font-bold ${data.part.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.part.netBenefit)}</span>`, sweep: `<span class="font-bold ${data.sweep.netBenefit >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.sweep.netBenefit)}</span>` },
+            ];
+            rows.forEach(rowData => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${rowData.label}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.full}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.part}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">${rowData.sweep}</td>
+                `;
+                ownerResultsBody.appendChild(tr);
+            });
+        };
 
         const calculateAndDisplay = () => {
             const selectedModel = modelSelect.value;
             const selectedBank = bankSelect.value;
             const selectedTenure = parseInt(tenureSelect.value, 10);
             const partPaymentAmount = parseFloat(partPaymentInput.value) || 0;
+            const sweepChargePercent = parseFloat(sweepChargePercentInput.value) / 100 || 0;
 
             if (!selectedModel || !selectedBank || !selectedTenure) {
                 resultsContainer.classList.add('hidden');
                 noSelectionDiv.classList.remove('hidden');
                 partPaymentInput.disabled = true;
                 partPaymentInput.value = '';
+                ownerResultsBody.innerHTML = '';
                 return;
             }
 
@@ -277,6 +366,7 @@
             const full = {};
             full.onRoadPrice = deal.onRoadPrice;
             
+            // UPDATED LOGIC: No discount if ICICI
             if (selectedBank === 'ICICI Bank') {
                 full.cashbackPercent = 0;
                 full.cashbackAmount = 0;
@@ -299,6 +389,7 @@
             part.cardAmount = Math.max(0, Math.min(partPaymentAmount, part.onRoadPrice));
             part.sweepAmount = part.onRoadPrice - part.cardAmount;
             
+            // UPDATED LOGIC: No discount if ICICI
             if (selectedBank === 'ICICI Bank') {
                 part.cashbackPercent = 0;
                 part.cashbackAmount = 0;
@@ -328,13 +419,57 @@
             sweep.youSave = sweep.cashbackAmount;
             sweep.effectivePrice = sweep.onRoadPrice - sweep.cashbackAmount;
             
+            // --- Owner Payout Calculation ---
+            const owner = {};
+            owner.full = {};
+            const fullPayoutPercent = (dealerPayouts[selectedBank] || {})[selectedTenure] || 0;
+            owner.full.payout = full.onRoadPrice * fullPayoutPercent;
+            owner.full.sweepCharge = full.onRoadPrice * sweepChargePercent;
+            owner.full.pineFee = full.onRoadPrice * 0.0075;
+            owner.full.mdrFee = full.onRoadPrice * 0.015;
+            owner.full.netBenefit = owner.full.payout + owner.full.sweepCharge - owner.full.pineFee - owner.full.mdrFee;
+
+            owner.part = {};
+            const partPayoutPercent = (dealerPayouts[selectedBank] || {})[selectedTenure] || 0;
+            owner.part.payout = part.cardAmount * partPayoutPercent;
+            owner.part.sweepCharge = part.cardAmount * sweepChargePercent;
+            owner.part.pineFee = part.cardAmount * 0.0075;
+            owner.part.mdrFee = part.cardAmount * 0.015;
+            owner.part.netBenefit = owner.part.payout + owner.part.sweepCharge - owner.part.pineFee - owner.part.mdrFee;
+
+            owner.sweep = {};
+            owner.sweep.payout = 'N/A';
+            owner.sweep.sweepCharge = sweep.onRoadPrice * sweepChargePercent;
+            owner.sweep.pineFee = 'N/A';
+            owner.sweep.mdrFee = sweep.onRoadPrice * 0.015;
+            owner.sweep.netBenefit = owner.sweep.sweepCharge - owner.sweep.mdrFee;
+            
             displayResults({ full, part, sweep });
+            if (!ownerResultsContainer.classList.contains('hidden')) displayOwnerResults(owner);
         };
         
         modelSelect.addEventListener('change', (e) => { populateBanks(e.target.value); calculateAndDisplay(); });
         bankSelect.addEventListener('change', (e) => { populateTenures(modelSelect.value, e.target.value); calculateAndDisplay(); });
         tenureSelect.addEventListener('change', calculateAndDisplay);
         partPaymentInput.addEventListener('input', calculateAndDisplay);
+        sweepChargePercentInput.addEventListener('input', calculateAndDisplay);
+
+        showOwnerViewBtn.addEventListener('click', () => {
+            if (ownerPasswordInput.value === 'owner123') {
+                ownerResultsContainer.classList.remove('hidden');
+                ownerLogin.classList.add('hidden');
+                passwordError.classList.add('hidden');
+                calculateAndDisplay();
+            } else {
+                passwordError.classList.remove('hidden');
+            }
+            ownerPasswordInput.value = '';
+        });
+
+        hideOwnerViewBtn.addEventListener('click', () => {
+            ownerResultsContainer.classList.add('hidden');
+            ownerLogin.classList.remove('hidden');
+        });
 
         window.onload = populateModels;
     </script>
